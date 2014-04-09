@@ -49,27 +49,24 @@ def get_difference(old_jobs, jobs):
         found = False
         for ojob in old_jobs:
             if job['jid'] == ojob['jid']:
-                print "%r  %r" % (job['jid'], ojob['jid'])
-                found = True
+                 found = True
         if found == False:
             new_jobs.append(job)
     return new_jobs
 
+o = open('/home/ubuntu/jobsearch/sdn.db','r')
 
-o = open('/home/ubuntu/jobsearch/sdn.db','w+')
 try:
     old_jobs = json.load(o)
-except:
+except Exception,e:
     old_jobs = []
-jobs = getjobs(longurl)
-
-new_jobs = get_difference(old_jobs, jobs) # switch to old_jobs,jobs after test
-send_email(new_jobs)
-print new_jobs
-
-json.dump(jobs,o)
+    print "failed to load old jobs \n %s" % e
 o.close()
-
-
-
-
+jobs = getjobs(longurl)
+new_jobs = get_difference(old_jobs, jobs) # switch to old_jobs,jobs after test
+if new_jobs != []:
+    send_email(new_jobs)
+print "New jobs:\n\n%s" % new_jobs
+f = open('/home/ubuntu/jobsearch/sdn.db','w')
+json.dump(jobs,f)
+f.close()
