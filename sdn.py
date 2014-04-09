@@ -64,8 +64,8 @@ except:
 jobs = getjobs(longurl)
 
 new_jobs = get_difference(old_jobs, jobs) # switch to old_jobs,jobs after test
-#send_email(new_jobs)
-send_email(jobs)
+send_email(new_jobs)
+#send_email(jobs)
 print new_jobs
 
 json.dump(jobs,o)
