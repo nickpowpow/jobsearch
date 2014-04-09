@@ -3,11 +3,12 @@ import re
 from bs4 import BeautifulSoup
 import json
 import smtplib
+import os
 
 def send_email(jobs):
-    sender = 'nicmatth-test@cisco.com'
+    sender = os.environ['EMAIL_ADDRESS']
     receivers = 'nicmatth@cisco.com'
-
+    server = smtplib.SMTP(os.environ['EMAIL_SERVER']+":587")
     message = """From: nicmatth-test@cisco.com
 To:nicmatth@cisco.com
 Subject: New jobs found
@@ -16,11 +17,12 @@ This is a job alert from nicmatth-script-v0.1.0.
     """
     for job in jobs:
         message += '\n' + job['title'] + '\n' + job['link'] +'\n'
+    server.starttls()
+    server.login(os.environ['EMAIL_ADDRESS'],os.environ['EMAIL_PASSWORD'])
     try:
-        smtpObj = smtplib.SMTP( "outbound.cisco.com" , 25 )
-        smtpObj.sendmail(sender, receivers, message)  
+        server.sendmail(sender, receivers, message)  
     except:
-        smtpObj.sendmail(sender, receivers, "Data failed")
+        server.sendmail(sender, receivers, "\n\nData Failed")
 
 longurl = "https://www2.apply2jobs.com/RSS/index.cfm?fuseaction=RSSSearch&UUID=AD5852FF-BDB9-44EE-78C577568756A0B6&Lang=en&Params=2$iF3kA2kKSZmg5MehKd1NP2qldqc3Rt_ODidRN4mQjtRFcDcUySveU3LPikJOpPtopoF476259g3oqMm5MLnYkTHMQoyqmmFYYyDkuLTFRH4n4elZngLnDnuQ3LkoCeOG3My3GmXKlNPAC5wOfHwMUhtWY7_WzEXLdnUJl98kzFQTX2UTx1t19FJbEzchskrq$H-1It1jlf4qgfJTKIb5GNwhW59GDnNUdwUW1xUN9aC0"
 
@@ -54,7 +56,7 @@ def get_difference(old_jobs, jobs):
     return new_jobs
 
 
-o = open('eng.db','w+')
+o = open('~/jobsearch/eng.db','w+')
 try:
     old_jobs = json.load(o)
 except:
