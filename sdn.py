@@ -56,7 +56,7 @@ def get_difference(old_jobs, jobs):
     return new_jobs
 
 
-o = open('~/jobsearch/sdn.db','w+')
+o = open('/home/ubuntu/jobsearch/sdn.db','w+')
 try:
     old_jobs = json.load(o)
 except:
